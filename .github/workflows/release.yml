@@ -1,0 +1,32 @@
+name: Release
+
+on:
+  workflow_dispatch:
+    inputs:
+      url:
+        description: "New Manifest URL"
+        required: true
+        type: string
+      sha256:
+        description: "New Manifest SHA256"
+        required: true
+        type: string
+      version:
+        description: "New Manifest VERSION"
+        required: true
+        type: string
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Bump Manifest
+        run: |
+          jq '.architecture["64bit"].url |= "${{ inputs.url }}" | .architecture["64bit"].hash |= "${{ inputs.sha256 }}" | .version |= "${{ inputs.version }}"' bucket/lucky.json > bucket/lucky.json
+      - name: Create PR
+        uses: peter-evans/create-pull-request@v6
+        with:
+          branch: "release/${{ inputs.version }}"
+          title: "Release ${{ inputs.version }}"
+          commit-message: "release: bump to ${{ inputs.version }}"
