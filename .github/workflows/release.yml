@@ -23,7 +23,8 @@ jobs:
       - uses: actions/checkout@v4
       - name: Bump Manifest
         run: |
-          jq '.architecture["64bit"].url |= "${{ inputs.url }}" | .architecture["64bit"].hash |= "${{ inputs.sha256 }}" | .version |= "${{ inputs.version }}"' bucket/lucky.json
+          jq '.architecture["64bit"].url |= "${{ inputs.url }}" | .architecture["64bit"].hash |= "${{ inputs.sha256 }}" | .version |= "${{ inputs.version }}"' \
+          bucket/lucky.json | tee bucket/lucky.json
       - name: Create PR
         if: false
         uses: peter-evans/create-pull-request@v6
